@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Map Directory</string>
+    <string name="title_home">Beranda</string>
+    <string name="title_map">Peta</string>
+    <string name="title_places">Tempat</string>
+    <string name="title_detail">Detail Tempat</string>
+    <string name="action_retry">Coba Lagi</string>
+    <string name="search_hint">Cari tempat...</string>
+</resources>
