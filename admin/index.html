@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel admin untuk mengelola data tempat pada Android Map Directory — direktori tempat kampus berbasis peta.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Panel — Android Map Directory</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ── Toast Container ── -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="app-container">
+
+    <!-- ════════════════════════════════════════════════════════
+         HEADER
+         ════════════════════════════════════════════════════════ -->
+    <header class="admin-header">
+      <div class="logo">
+        <div class="logo-icon">📍</div>
+        <div>
+          <h1>Map Directory Admin</h1>
+          <span class="subtitle">Database & Data Management</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div id="connection-status" class="connection-status disconnected">
+          <span class="connection-dot"></span>
+          Belum dikonfigurasi
+        </div>
+      </div>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════
+         CONFIG BAR — API Base URL & Key
+         ════════════════════════════════════════════════════════ -->
+    <div class="config-bar">
+      <div class="field">
+        <label for="config-base-url">Base URL API</label>
+        <input type="url" id="config-base-url"
+               placeholder="https://your-app.vercel.app"
+               autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="config-api-key">X-API-Key</label>
+        <input type="password" id="config-api-key"
+               placeholder="secret-api-key-here"
+               autocomplete="off">
+      </div>
+      <button class="btn btn-primary" onclick="loadData()">🔄 Hubungkan</button>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         STATS ROW
+         ════════════════════════════════════════════════════════ -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Tempat</div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-sub">places in database</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Kategori</div>
+        <div class="stat-value" id="stat-categories">—</div>
+        <div class="stat-sub">active categories</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Koordinat Valid</div>
+        <div class="stat-value" id="stat-coords">—</div>
+        <div class="stat-sub">lat/lng verified</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-rata Rating</div>
+        <div class="stat-value" id="stat-rating">—</div>
+        <div class="stat-sub">dari 5.0 bintang</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         TOOLBAR — Search, Filter, Add
+         ════════════════════════════════════════════════════════ -->
+    <div class="section-toolbar">
+      <h2>Daftar Tempat</h2>
+      <div class="toolbar-actions">
+        <div class="search-box">
+          <input type="text" id="search-input"
+                 placeholder="Cari nama atau alamat..."
+                 autocomplete="off">
+        </div>
+        <select id="filter-category" class="filter-select">
+          <option value="">Semua Kategori</option>
+        </select>
+        <button class="btn btn-ghost" onclick="reloadData()">🔄 Reload</button>
+        <button class="btn btn-success" onclick="openAddModal()">➕ Tambah Tempat</button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         DATA TABLE
+         ════════════════════════════════════════════════════════ -->
+    <div class="table-container">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Kategori</th>
+              <th>Latitude</th>
+              <th>Longitude</th>
+              <th>Alamat</th>
+              <th>Jam Buka</th>
+              <th>Rating</th>
+              <th>Foto</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="places-tbody">
+            <tr>
+              <td colspan="9">
+                <div class="empty-state">
+                  <div class="empty-icon">🗺️</div>
+                  <p>Atur Base URL dan API Key, lalu klik "Hubungkan".</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /.app-container -->
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — Tambah / Edit Tempat
+       ════════════════════════════════════════════════════════ -->
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Tambah Tempat Baru</h3>
+        <button class="modal-close" onclick="closeModal()" title="Tutup">&times;</button>
+      </div>
+
+      <form onsubmit="handleFormSubmit(event)">
+        <div class="modal-body">
+          <div class="form-grid">
+            <!-- Name -->
+            <div class="form-group full-width">
+              <label for="field-name">Nama Tempat <span class="required">*</span></label>
+              <input type="text" id="field-name" placeholder="contoh: Kafe Literasi" maxlength="150" required>
+              <span id="error-name" class="field-error"></span>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+              <label for="field-category">Kategori <span class="required">*</span></label>
+              <select id="field-category" required>
+                <option value="">— Pilih Kategori —</option>
+              </select>
+              <span id="error-category" class="field-error"></span>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+              <label for="field-address">Alamat</label>
+              <input type="text" id="field-address" placeholder="Jl. Kampus No. 1" maxlength="255">
+            </div>
+
+            <!-- Latitude -->
+            <div class="form-group">
+              <label for="field-latitude">Latitude <span class="required">*</span></label>
+              <input type="number" id="field-latitude" step="0.0000001" min="-90" max="90"
+                     placeholder="-7.2756123" required>
+              <span id="error-latitude" class="field-error"></span>
+              <span class="field-hint">Rentang: -90 s.d. 90 (klik kanan Google Maps → copy koordinat)</span>
+            </div>
+
+            <!-- Longitude -->
+            <div class="form-group">
+              <label for="field-longitude">Longitude <span class="required">*</span></label>
+              <input type="number" id="field-longitude" step="0.0000001" min="-180" max="180"
+                     placeholder="112.7946234" required>
+              <span id="error-longitude" class="field-error"></span>
+              <span class="field-hint">Rentang: -180 s.d. 180</span>
+            </div>
+
+            <!-- Opening Hours -->
+            <div class="form-group">
+              <label for="field-opening-hours">Jam Buka</label>
+              <input type="text" id="field-opening-hours" placeholder="08:00-22:00" maxlength="50">
+            </div>
+
+            <!-- Photo URL -->
+            <div class="form-group">
+              <label for="field-photo-url">URL Foto</label>
+              <input type="url" id="field-photo-url" placeholder="https://example.com/photo.jpg" maxlength="500">
+            </div>
+
+            <!-- Description -->
+            <div class="form-group full-width">
+              <label for="field-description">Deskripsi</label>
+              <textarea id="field-description" rows="3"
+                        placeholder="Deskripsi singkat tentang tempat ini..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeModal()">Batal</button>
+          <button type="submit" id="form-submit-btn" class="btn btn-primary">💾 Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
