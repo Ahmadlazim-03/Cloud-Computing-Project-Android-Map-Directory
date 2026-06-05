@@ -1,0 +1,72 @@
+### Android Map Directory API — quick tests
+### Use with the VS Code "REST Client" extension. Edit @baseUrl / @apiKey as needed.
+
+@baseUrl = http://localhost:3000
+@apiKey = change-me-to-a-long-random-secret
+
+### Health
+GET {{baseUrl}}/api/health
+
+### Categories
+GET {{baseUrl}}/api/categories
+
+### All places
+GET {{baseUrl}}/api/places
+
+### Filter by category (slug)
+GET {{baseUrl}}/api/places?category=cafe
+
+### Search by keyword
+GET {{baseUrl}}/api/places?q=kopi
+
+### Sort by distance from a point
+GET {{baseUrl}}/api/places?lat=-7.2756&lng=112.7946&sort=distance&limit=10
+
+### Pagination
+GET {{baseUrl}}/api/places?limit=5&offset=5
+
+### Place detail (with distance)
+GET {{baseUrl}}/api/places/1?lat=-7.2756&lng=112.7946
+
+### Create place (admin) — requires X-API-Key
+POST {{baseUrl}}/api/places
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+
+{
+  "category_id": 1,
+  "name": "Kafe Baru",
+  "latitude": -7.2760,
+  "longitude": 112.7950,
+  "address": "Jl. Kampus No. 99",
+  "opening_hours": "08:00-22:00",
+  "description": "Kafe baru dekat gerbang.",
+  "rating": 4.3,
+  "photo_url": "https://picsum.photos/seed/new/400/300"
+}
+
+### Update place (admin)
+PUT {{baseUrl}}/api/places/1
+Content-Type: application/json
+X-API-Key: {{apiKey}}
+
+{
+  "rating": 4.9,
+  "description": "Deskripsi diperbarui."
+}
+
+### Unauthorized write (should return 401)
+POST {{baseUrl}}/api/places
+Content-Type: application/json
+
+{ "category_id": 1, "name": "Tanpa Key", "latitude": -7.27, "longitude": 112.79 }
+
+### Add review
+POST {{baseUrl}}/api/places/1/reviews
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "comment": "Tempatnya nyaman!",
+  "user_id": "device-123"
+}

@@ -7,7 +7,7 @@ PROYEK: "Android Map Directory" — aplikasi Android yang menampilkan tempat di 
 kampus pada peta dan membuka rute. Aplikasi mobile TIDAK mengakses database langsung;
 semua data lewat REST API yang saya bangun dan deploy ke cloud.
 
-STACK: Node.js + Express, database PostgreSQL (atau MySQL). Response JSON.
+STACK: Next.js + Tailwind, database PostgreSQL (atau MySQL). Response JSON. Menggunakan Supabase
 (Jika kamu sarankan stack lain yang lebih mudah dideploy, jelaskan alasannya.)
 
 KONTRAK API yang WAJIB diikuti:
