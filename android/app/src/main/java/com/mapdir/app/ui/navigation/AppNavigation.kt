@@ -25,9 +25,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.compose.ui.unit.dp
+import com.mapdir.app.data.repository.PlaceRepository
 import com.mapdir.app.ui.detail.DetailScreen
 import com.mapdir.app.ui.home.HomeScreen
 import com.mapdir.app.ui.list.PlaceListScreen
+import com.mapdir.app.ui.map.MapScreen
 
 /**
  * Navigation routes definitions.
@@ -57,7 +60,8 @@ sealed class Screen(val route: String) {
  */
 @Composable
 fun AppNavigation(
-    onOpenRoute: (latitude: Double, longitude: Double) -> Unit
+    onOpenRoute: (latitude: Double, longitude: Double) -> Unit,
+    placeRepository: PlaceRepository
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -139,9 +143,12 @@ fun AppNavigation(
                 )
             }
 
-            // ── Tab 2: Map Screen Placeholder ────────────────────────────────
+            // ── Tab 2: Map Screen ───────────────────────────────────────────
             composable(Screen.MapPlaceholder.route) {
-                MapPlaceholderScreen()
+                MapScreen(
+                    placeRepository = placeRepository,
+                    onOpenRoute = onOpenRoute
+                )
             }
 
             // ── Place List Screen ───────────────────────────────────────────
@@ -185,33 +192,6 @@ fun AppNavigation(
                     onOpenRoute = onOpenRoute
                 )
             }
-        }
-    }
-}
-
-/**
- * Placeholder for the Map Screen.
- *
- * This serves as the integration point where the Maps/GPS teammate will
- * place their MapView / Google Maps Compose components.
- */
-@Composable
-fun MapPlaceholderScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier.padding(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Layar Peta & GPS\n(Modul ini diintegrasikan oleh rekan tim Maps/GPS)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
         }
     }
 }

@@ -83,6 +83,11 @@ dependencies {
     // ── Image Loading: Coil ────────────────────────────────────────────
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    // ── Google Maps SDK & Location Services ────────────────────────────
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+    implementation("com.google.maps.android:maps-compose:4.4.1")
+
     // ── Testing ────────────────────────────────────────────────────────
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
