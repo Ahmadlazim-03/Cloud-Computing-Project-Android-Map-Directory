@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.mapdir.app.data.repository.PlaceRepository
 import com.mapdir.app.ui.navigation.AppNavigation
 import com.mapdir.app.ui.theme.MapDirTheme
 
@@ -20,12 +21,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val placeRepository = PlaceRepository()
+
         setContent {
             MapDirTheme {
                 AppNavigation(
                     onOpenRoute = { latitude, longitude ->
                         handleOpenRoute(latitude, longitude)
-                    }
+                    },
+                    placeRepository = placeRepository
                 )
             }
         }
